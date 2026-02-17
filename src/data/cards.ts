@@ -10,6 +10,157 @@ export interface Card {
 
 type RawCard = [string, string, Domain, boolean]
 
+// Enriched definitions override the plain "spelled out" meaning.
+// Keep it short but useful: 1 sentence to short paragraph.
+const ENRICHED_DEFS: Record<string, string> = {
+  // --- Domain 1 (General Security Concepts) ---
+  AAA:
+    'Authentication, Authorization, and Accounting — A framework for verifying identity, granting appropriate permissions, and logging actions for auditing and traceability.',
+  ABAC:
+    'Attribute-based Access Control — Makes access decisions using attributes (user, resource, environment like time/location), enabling fine-grained and flexible policy enforcement.',
+  ACL:
+    'Access Control List — A list of rules/entries that define which subjects (users/processes) can access which objects (files/resources) and what actions they may perform.',
+  AES:
+    'Advanced Encryption Standard — A modern symmetric encryption algorithm used to protect data confidentiality (e.g., disk encryption, VPNs, file encryption).',
+  'AES-256':
+    'Advanced Encryption Standard (256-bit) — AES with a 256-bit key, commonly used where strong confidentiality is required.',
+  CA:
+    'Certificate Authority — A trusted entity that issues and signs digital certificates so systems can trust identities/keys in a PKI.',
+  CIA:
+    'Confidentiality, Integrity, Availability — The three core security objectives: prevent unauthorized disclosure, prevent unauthorized changes, and keep systems/data accessible.',
+  CRL:
+    'Certificate Revocation List — A published list of certificates that are no longer trusted (revoked) before their expiration.',
+  CSR:
+    'Certificate Signing Request — A request (usually containing a public key and identity info) sent to a CA to obtain a signed certificate.',
+  DAC:
+    'Discretionary Access Control — The resource owner controls permissions (e.g., file owner decides who can read/write).',
+  HMAC:
+    'Hashed Message Authentication Code — Uses a shared secret + hash to provide integrity and authenticity (detects tampering and verifies sender knowledge of the secret).',
+  MFA:
+    'Multifactor Authentication — Uses 2+ factor types (know/have/are) to reduce account takeover risk beyond passwords alone.',
+  OCSP:
+    'Online Certificate Status Protocol — Checks certificate revocation status in near real-time instead of relying only on CRLs.',
+  PKI:
+    'Public Key Infrastructure — The people, processes, and technology (CAs, certificates, policies) that enable trusted public-key cryptography at scale.',
+  RBAC:
+    'Role-based Access Control — Grants permissions based on roles (job functions), simplifying least-privilege management across many users.',
+  TLS:
+    'Transport Layer Security — A protocol that protects data in transit against eavesdropping and tampering (commonly used for HTTPS).',
+  IPSec:
+    'Internet Protocol Security — A suite that secures IP traffic (commonly used for site-to-site and remote-access VPNs).',
+  AH:
+    'Authentication Header — An IPsec component that provides integrity/authentication for IP packets (no encryption).',
+  ESP:
+    'Encapsulated Security Payload — An IPsec component that can provide confidentiality (encryption) and also integrity/authentication for IP packets.',
+  'S/MIME':
+    'Secure/Multipurpose Internet Mail Extensions — Uses certificates to digitally sign and encrypt email, providing integrity/authentication and confidentiality.',
+  SAML:
+    'Security Assertion Markup Language — An XML-based standard for exchanging authentication/authorization assertions, commonly enabling enterprise SSO between an IdP and service provider.',
+  TOC:
+    'Time-of-check — The moment a system verifies a condition (e.g., permissions) before using a resource; relevant in race condition discussions (TOCTOU).',
+  TOU:
+    'Time-of-use — The moment a system actually uses a resource after a check; a gap between TOC and TOU can enable TOCTOU attacks.',
+  // Note: you can keep separate TOCTOU even if TOC/TOU exist as individual cards
+  TOCTOU:
+    'Time-of-check to Time-of-use — A race condition where something changes between a security check and the actual use, letting an attacker swap/modify a resource in the gap.',
+
+  // --- Domain 2 (Threats, Vulnerabilities & Mitigations) ---
+  CVE:
+    'Common Vulnerabilities and Exposures — A standardized identifier for publicly known vulnerabilities, used for tracking and remediation workflows.',
+  CVSS:
+    'Common Vulnerability Scoring System — A standard scoring method that estimates severity/impact to help prioritize patching.',
+  IoC:
+    'Indicators of Compromise — Evidence that suggests malicious activity (hashes, IPs, domains, filenames, registry keys, etc.).',
+  SQLi:
+    'SQL Injection — A web/app attack where malicious SQL is injected via input to read/modify data or bypass authentication.',
+  XSS:
+    'Cross-site Scripting — Injected script runs in a user’s browser, often used for session theft, redirecting, or malicious actions.',
+  CSRF:
+    'Cross-site Request Forgery — Tricks an authenticated user’s browser into sending unwanted requests to a site, abusing existing session/cookies.',
+  'ATT&CK':
+    'MITRE ATT&CK — A knowledge base of real-world adversary tactics and techniques used for threat modeling, detection engineering, and hunting.',
+  DDoS:
+    'Distributed Denial of Service — Many sources overwhelm a target service/network to degrade availability.',
+
+  // --- Domain 3 (Security Architecture) ---
+  CASB:
+    'Cloud Access Security Broker — A policy enforcement point between cloud users and cloud services to provide visibility and enforce security controls (e.g., DLP, access, threat protection).',
+  SASE:
+    'Secure Access Service Edge — A model that converges networking and security as cloud-delivered services for remote users/branches (e.g., secure web access + access control).',
+  ICS:
+    'Industrial Control Systems — Systems that monitor/control industrial processes; often require strong availability and safety-focused security.',
+  SCADA:
+    'Supervisory Control and Data Acquisition — A type of ICS used to monitor/control distributed industrial environments (utilities, manufacturing).',
+  IDS:
+    'Intrusion Detection System — Monitors events/traffic and alerts on signs of possible incidents or policy violations.',
+  IPS:
+    'Intrusion Prevention System — Like IDS, but can also attempt to stop/block detected malicious activity.',
+  NGFW:
+    'Next-generation Firewall — Firewall with advanced features like application awareness, IDS/IPS capabilities, and deeper inspection for better threat control.',
+  VLAN:
+    'Virtual Local Area Network — Logically segments a network to reduce broadcast domains and limit lateral movement.',
+  VPN:
+    'Virtual Private Network — Encrypted tunnel for secure remote access or site-to-site connectivity over untrusted networks.',
+  WAF:
+    'Web Application Firewall — Filters HTTP(S) traffic to protect web apps from attacks like SQLi and XSS.',
+
+  // --- Domain 4 (Security Operations) ---
+  DLP:
+    'Data Loss Prevention — Identifies, monitors, and protects sensitive data in use/in motion/at rest to prevent unauthorized disclosure or exfiltration.',
+  SIEM:
+    'Security Information and Event Management — Centralizes security logs/events and correlates them into actionable alerts for monitoring, detection, and investigations.',
+  SOAR:
+    'Security Orchestration, Automation, and Response — Automates and orchestrates incident workflows (triage, enrichment, containment) across multiple tools.',
+  EDR:
+    'Endpoint Detection and Response — Endpoint-focused monitoring/detection and response capabilities for investigating and containing threats on hosts.',
+  XDR:
+    'Extended Detection and Response — Correlates telemetry across multiple layers (endpoints, network, cloud, email) for broader detection/response.',
+  FIM:
+    'File Integrity Management — Detects unauthorized or unexpected file changes by comparing baselines/hashes (useful for tamper detection).',
+  HIDS:
+    'Host-based Intrusion Detection System — Detects suspicious activity on a single endpoint/host (logs, processes, file changes).',
+  NIDS:
+    'Network-based Intrusion Detection System — Detects suspicious activity by inspecting network traffic across segments.',
+  HIPS:
+    'Host-based Intrusion Prevention System — Detects and actively blocks suspicious activity on a host (e.g., stopping a process/action).',
+  NIPS:
+    'Network-based Intrusion Prevention System — Detects and blocks malicious network traffic inline.',
+  SNMP:
+    'Simple Network Management Protocol — A protocol for monitoring and managing network devices (collect metrics, query status, receive traps).',
+  MSP:
+    'Managed Service Provider — Outsourced provider that runs/maintains IT services (helpdesk, infrastructure, monitoring) for clients.',
+  MSSP:
+    'Managed Security Service Provider — Outsourced provider that runs security operations (monitoring, detection, response, managed tools) for clients.',
+  LDAP:
+    'Lightweight Directory Access Protocol — Used to query/manage directory services (users/groups), commonly used for centralized authentication/authorization.',
+  RADIUS:
+    'Remote Authentication Dial-In User Service — Centralized AAA commonly used for network access control (Wi-Fi, VPN, switches).',
+
+  // --- Domain 5 (Security Program Management & Oversight) ---
+  ALE:
+    'Annualized Loss Expectancy — Expected yearly loss from a risk (often calculated using SLE × ARO) to support risk decisions.',
+  ARO:
+    'Annualized Rate of Occurrence — How often a loss event is expected to occur per year.',
+  SLE:
+    'Single Loss Expectancy — Estimated cost/impact of a single occurrence of a risk event.',
+  BIA:
+    'Business Impact Analysis — Identifies critical processes and the impact of disruption to guide recovery priorities.',
+  BCP:
+    'Business Continuity Planning — Plans and preparations to keep critical operations running during/after disruptions.',
+  DRP:
+    'Disaster Recovery Plan — Plans to restore IT services and infrastructure after a major outage/disaster.',
+  RPO:
+    'Recovery Point Objective — Maximum acceptable data loss measured in time (how far back you can restore).',
+  RTO:
+    'Recovery Time Objective — Target time to restore service after disruption (maximum acceptable downtime).',
+  MTBF:
+    'Mean Time Between Failures — Average operational time between failures for repairable systems (reliability metric).',
+  MTTF:
+    'Mean Time to Failure — Average time until failure for non-repairable components/systems.',
+  MTTR:
+    'Mean Time to Recover/Repair — Average time to restore service after a failure (maintainability metric).',
+}
+
 // Card data: [acronym, definition, domain, isFrequent]
 const RAW_CARDS: RawCard[] = [
   // Domain 1: General Security Concepts
@@ -361,11 +512,16 @@ const RAW_CARDS: RawCard[] = [
   ['SLE', 'Single Loss Expectancy', '5', true],
 ]
 
-export const CARDS: Card[] = RAW_CARDS.map(([acronym, definition, domain, frequent], index) => ({
-  id: `${acronym}-${domain}-${index}`,
-  acronym,
-  definition,
-  domain,
-  frequent,
-}))
+
+export const CARDS: Card[] = RAW_CARDS.map(([acronym, definition, domain, frequent], index) => {
+  const enriched = ENRICHED_DEFS[acronym]
+  return {
+    id: `${acronym}-${domain}-${index}`,
+    acronym,
+    // Prefer enriched meaning; fall back to original.
+    definition: enriched ? `${definition} — ${enriched}` : definition,
+    domain,
+    frequent,
+  }
+})
 
