@@ -35,6 +35,7 @@ function App() {
 
   const [isFlipped, setIsFlipped] = useState(false)
   const [navDirection, setNavDirection] = useState<'next' | 'prev' | null>(null)
+  const [browseFilter, setBrowseFilter] = useState<DomainFilter>('all')
 
   const hasCards = workDeck.length > 0 && currentCard
 
@@ -138,6 +139,17 @@ function App() {
 
   const showComplete =
     stats.knownCount > 0 && stats.knownCount === cards.length
+
+  const groupedByDomain = useMemo(
+    () =>
+      (['1', '2', '3', '4', '5'] as const).map((d) => ({
+        id: d,
+        label: DOMAIN_LABELS[d],
+        color: DOMAIN_COLORS[d],
+        cards: cards.filter((c) => c.domain === d),
+      })),
+    [cards],
+  )
 
   return (
     <>
@@ -451,6 +463,74 @@ function App() {
           </div>
         ))}
       </div>
+
+      {/* Browse all cards */}
+      <section className="browse">
+        <div className="browse-header">
+          <div className="browse-title">All Acronyms</div>
+          <div className="browse-subtitle">
+            Quick reference view of every card, grouped by domain.
+          </div>
+        </div>
+        <div className="browse-tabs">
+          {(['all', '1', '2', '3', '4', '5'] as const).map((d) => (
+            <button
+              key={d}
+              type="button"
+              className={`browse-tab ${
+                browseFilter === d ? 'browse-tab-active' : ''
+              }`}
+              onClick={() => setBrowseFilter(d)}
+            >
+              {d === 'all' ? 'All Domains' : DOMAIN_PILL_LABELS[d]}
+            </button>
+          ))}
+        </div>
+        <div className="browse-domains">
+          {groupedByDomain
+            .filter(
+              (group) => browseFilter === 'all' || group.id === browseFilter,
+            )
+            .map((group) => (
+              <div key={group.id} className="browse-domain">
+                <div className="browse-domain-header">
+                  <span
+                    className="browse-domain-pill"
+                    style={{
+                      color: group.color,
+                      borderColor: `${group.color}55`,
+                      background: `${group.color}11`,
+                    }}
+                  >
+                    {DOMAIN_PILL_LABELS[group.id]}
+                  </span>
+                  <span className="browse-domain-count">
+                    {group.cards.length} cards
+                  </span>
+                </div>
+                <div className="browse-cards">
+                  {group.cards.map((card) => (
+                    <div key={card.id} className="browse-card">
+                      <div className="browse-card-main">
+                        <div className="browse-card-acronym">
+                          {card.acronym}
+                        </div>
+                        <div className="browse-card-def">
+                          {card.definition}
+                        </div>
+                      </div>
+                      {card.frequent && (
+                        <span className="browse-card-badge">
+                          ⚡ Frequently tested
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+        </div>
+      </section>
     </>
   )
 }

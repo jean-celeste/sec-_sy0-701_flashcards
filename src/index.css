@@ -673,3 +673,146 @@ kbd {
     gap: 12px;
   }
 }
+
+/* Browse view */
+
+.browse {
+  margin-top: 32px;
+  max-width: 960px;
+  width: 100%;
+}
+
+.browse-header {
+  margin-bottom: 12px;
+}
+
+.browse-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.browse-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.browse-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.browse-tab {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.browse-tab:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.browse-tab-active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.browse-domains {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.browse-domain {
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+}
+
+.browse-domain-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.browse-domain-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.browse-domain-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.browse-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.browse-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.browse-card:first-of-type {
+  border-top: none;
+}
+
+.browse-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.browse-card-acronym {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.browse-card-def {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.browse-card-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--dfreq);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 77, 109, 0.5);
+  background: rgba(255, 77, 109, 0.08);
+  white-space: nowrap;
+}
