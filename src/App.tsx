@@ -365,18 +365,6 @@ function App() {
                   : currentCard?.acronym
                 : 'No cards'}
             </div>
-            <div className="card-full-sub" id="backSub">
-              {hasCards
-                ? acronymFirst
-                  ? currentCard?.acronym
-                  : (() => {
-                      const text = currentCard?.definition ?? ''
-                      return text.length > 36
-                        ? `${text.substring(0, 36)}…`
-                        : text
-                    })()
-                : ''}
-          </div>
         </div>
           </div>
         </div>
