@@ -322,7 +322,10 @@ function App() {
             {currentCard?.frequent && (
               <div className="freq-badge">⚡ Frequently Tested</div>
             )}
-            <div className="card-acronym" id="frontText">
+            <div
+              className={acronymFirst ? 'card-acronym' : 'card-full'}
+              id="frontText"
+            >
               {hasCards
                 ? acronymFirst
                   ? currentCard?.acronym
